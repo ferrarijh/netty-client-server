@@ -1,0 +1,6 @@
+com\example\echo\server\EchoServerHandler.class
+com\example\echo\client\EchoClient$1.class
+com\example\echo\server\EchoServer$1.class
+com\example\echo\server\EchoServer.class
+com\example\echo\client\EchoClient.class
+com\example\echo\client\EchoClientHandler.class
