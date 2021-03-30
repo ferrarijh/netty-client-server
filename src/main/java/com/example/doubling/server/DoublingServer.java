@@ -10,6 +10,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 import java.net.InetSocketAddress;
 
@@ -44,6 +46,7 @@ public class DoublingServer {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
+                                    new LoggingHandler(LogLevel.INFO),
                                     new DoublingRequestReplayingDecoder(),
                                     new DoublingResponseEncoder(),
                                     new DoublingProcessingHandler()
