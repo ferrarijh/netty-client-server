@@ -1,4 +1,4 @@
-package com.example.doubling.handler;
+package com.example.doubling.server;
 
 import com.example.doubling.model.RequestData;
 import io.netty.buffer.ByteBuf;

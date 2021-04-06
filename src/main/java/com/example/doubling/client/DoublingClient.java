@@ -1,8 +1,5 @@
 package com.example.doubling.client;
 
-import com.example.doubling.handler.DoublingClientHandler;
-import com.example.doubling.handler.DoublingRequestEncoder;
-import com.example.doubling.handler.DoublingResponseBTMDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
