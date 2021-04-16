@@ -11,31 +11,21 @@ import java.nio.charset.StandardCharsets;
 
 public class SpeedTestCharClientHandler extends ChannelInboundHandlerAdapter {
 
-    private final int cnt;
-
-    public SpeedTestCharClientHandler(int cnt){
-        this.cnt = cnt;
-    }
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         char[] header = StringGenerator.generateAlpha(SpeedTestCharData.HEADER_LEN).toCharArray();
         char[] body = StringGenerator.generateNum(SpeedTestCharData.BODY_LEN).toCharArray();
-//        byte[] header =  StringGenerator.generateAlpha(SpeedTestCharData.HEADER_LEN).getBytes(StandardCharsets.UTF_8);
-//        byte[] body = StringGenerator.generateAlpha(SpeedTestCharData.BODY_LEN).getBytes(StandardCharsets.UTF_8);
         SpeedTestCharData data = new SpeedTestCharData(header, body);
 
-        setCurrentTimeMillis();
         System.out.println("(channelActive)");
 
-        for(int i=0; i<cnt; i++) {
+        GlobalTimer.setTimeActive();
+
+        int gCnt = GlobalTimer.MAX;
+        for(int i=0; i<gCnt; i++){
             ctx.writeAndFlush(data);
             GlobalTimer.increm();
         }
-    }
-
-    public void setCurrentTimeMillis(){
-        GlobalTimer.setTimeActive();
     }
 
     @Override
@@ -45,11 +35,15 @@ public class SpeedTestCharClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        long timeLast = System.currentTimeMillis();
-        long timeSpan = timeLast - GlobalTimer.getTimeActive();
-        System.out.println("(channelReadComplete) "+ timeSpan /1000+'.'+ timeSpan %1000+"s with "+cnt+"("+GlobalTimer.getCnt()+")");
-//        System.out.println("timeActive="+ GlobalTimer.getTimeActive());
-//        System.out.println("timeLast="+timeLast);
+        long timeSpan = GlobalTimer.getTimeSpan();
+        System.out.println("(channelReadComplete-CharClientHandler-"+Thread.currentThread().getName()+") "+ timeSpan /1000+'.'+ timeSpan %1000+"s ("+GlobalTimer.cnt+")");
         ctx.close();
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+
+        System.out.println("(channelInactive) "+GlobalTimer.cnt);
     }
 }

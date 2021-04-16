@@ -22,15 +22,15 @@ public class EchoClient {
     }
 
     public static void main(String[] args) throws Exception{
-        if (args.length != 2){
-            System.err.println("[EchoClient] args.length should be 2");
-            return;
-        }
+//        if (args.length != 2){
+//            System.err.println("[EchoClient] args.length should be 2");
+//            return;
+//        }
+//
+//        String h = args[0];
+//        int p = Integer.parseInt(args[1]);
 
-        String h = args[0];
-        int p = Integer.parseInt(args[1]);
-
-        (new EchoClient(h, p)).start();
+        (new EchoClient("localhost", 8081)).start();
     }
 
     public void start() throws Exception{

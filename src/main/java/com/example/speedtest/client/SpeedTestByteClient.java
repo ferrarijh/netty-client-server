@@ -7,6 +7,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 public class SpeedTestByteClient {
     public static String remote = "localhost";
@@ -34,7 +36,7 @@ public class SpeedTestByteClient {
                                     new SpeedTestByteEncoder()
                             );
                             ch.pipeline().addLast(
-                                    "handler", new SpeedTestByteClientHandler(100000)
+                                    "handler", new SpeedTestByteClientHandler()
                             );
                         }
                     });

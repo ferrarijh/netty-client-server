@@ -15,31 +15,25 @@ import java.util.logging.Logger;
 
 public class EchoServer {
 
-    private final int port;
-
-    public EchoServer(int p){this.port = p;}
-
     public static void main(String[] args) throws Exception{
 
-        if(args.length != 1){
-            System.err.println("argument length should not be 1");
-        }
-        int port = Integer.parseInt(args[0]);
+//        if(args.length != 1){
+//            System.err.println("argument length should not be 1");
+//        }
+//        int port = Integer.parseInt(args[0]);
 
-        (new EchoServer(port)).start(); //TODO("why not static start() without new?")
+        (new EchoServer()).start(); //TODO("why not static start() without new?")
     }
 
     public void start() throws Exception{
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-        InetSocketAddress socketAddress = new InetSocketAddress(port);
 
-        System.out.println("EchoServer started at ["+socketAddress.toString()+"]");
+        System.out.println("EchoServer started...");
 
         try{
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(eventLoopGroup)
                     .channel(NioServerSocketChannel.class)
-                    .localAddress(socketAddress)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline p = socketChannel.pipeline();   //returns assigned ChannelPipeline.
@@ -49,7 +43,7 @@ public class EchoServer {
             //childHandler(): executed after connection completion
             //handler(): executed on ServerBootstrap initialization
 
-            ChannelFuture f = serverBootstrap.bind().sync();
+            ChannelFuture f = serverBootstrap.bind(8081).sync();
             //wait for binding operation to complete
             //bind() creates new Channel and bind it.
 

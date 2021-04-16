@@ -1,9 +1,6 @@
 package com.example.speedtest.server;
 
-import com.example.speedtest.common.SpeedTestByteDecoder;
-import com.example.speedtest.common.SpeedTestByteEncoder;
-import com.example.speedtest.common.SpeedTestCharDecoder;
-import com.example.speedtest.common.SpeedTestCharEncoder;
+import com.example.speedtest.common.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -33,9 +30,9 @@ public class SpeedTestCharServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
-//                                    new LoggingHandler(LogLevel.INFO),
+                                    new LoggingHandler(LogLevel.INFO),
                                     new SpeedTestCharEncoder(),
-                                    new SpeedTestCharDecoder(),
+                                    new SpeedTestReplayingCharDecoder(),
                                     new SpeedTestCharProcessor()
 //                                    new SpeedTestByteEncoder(),
 //                                    new SpeedTestByteDecoder(),

@@ -39,7 +39,7 @@ public class SpeedTestCharClient {
 //                                    new SpeedTestByteEncoder()
                             );
                             ch.pipeline().addLast(
-                                    "handler", new SpeedTestCharClientHandler(100000)
+                                    "handler", new SpeedTestCharClientHandler()
                             );
                         }
                     });

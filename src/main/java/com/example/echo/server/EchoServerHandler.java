@@ -11,6 +11,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     //called when server receives msg. (when incoming data is detected at inbound buffer)
     //actual business logic?
     //messages are NOT released automatically after channelRead() returns.
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf in = (ByteBuf) msg;
