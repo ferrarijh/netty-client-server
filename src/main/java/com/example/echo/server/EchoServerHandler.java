@@ -25,8 +25,8 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         long time = System.currentTimeMillis();
         System.out.println("[channelReadComplete()-h1]["+time+"] at "+this.hashCode()+" | "+Thread.currentThread().getId()+"\n");
-        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)    //TODO("??")
-                .addListener(ChannelFutureListener.CLOSE);  //close channel after flush
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER);    //TODO("??")
+//                .addListener(ChannelFutureListener.CLOSE);  //close channel after flush
     }
 
     @Override

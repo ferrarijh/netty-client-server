@@ -14,14 +14,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf>{
     //called when channel is connected
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        for(int i=0; i<100; i++) {
-//            Person p = new Person("Jonathan", 28);
-
-            long time = System.currentTimeMillis();
-            System.out.println("["+time+"]");
-//            ctx.writeAndFlush(p);
             ctx.writeAndFlush(Unpooled.copiedBuffer("Hello from ", CharsetUtil.UTF_8));
-        }
     }
 
     //called upon receiving message

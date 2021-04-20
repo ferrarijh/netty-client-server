@@ -17,10 +17,11 @@ public class EndServer {
     private final int port = 8081;
 
     public static void main(String[] args) {
-        new EndServer().run();
+        for(int i=8081; i<=8100; i++)
+            new EndServer().run(i);
     }
 
-    public void run(){
+    public void run(int p){
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
 
@@ -50,13 +51,14 @@ public class EndServer {
                         }
                     });
 
-            sb.bind(this.port).sync()
-                    .channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            sb.bind(p);
+//                    .sync()
+//                    .channel().closeFuture().sync();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
         } finally{
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
+//            workerGroup.shutdownGracefully();
+//            bossGroup.shutdownGracefully();
         }
     }
 }

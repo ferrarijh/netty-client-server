@@ -18,14 +18,17 @@ public class MediatorServer {
 //    private EventLoopGroup workerGroup2;
     private EventLoopGroup bossGroup;
 
+    private EventLoop testLoop;
+
     public static void main(String[] args) throws InterruptedException {
         new MediatorServer().run();
     }
 
     public void run() throws InterruptedException {
-//        workerGroup2 = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         bossGroup = new NioEventLoopGroup();
+
+//        testLoop = workerGroup.next();
 
         try {
             ServerBootstrap sb = new ServerBootstrap();
@@ -43,6 +46,12 @@ public class MediatorServer {
                                             bb.writeBytes(msg);
                                             ctx.writeAndFlush(bb);
                                         }
+
+                                        @Override
+                                        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                            String msg = "["+Thread.currentThread().getName()+"]";
+                                            System.out.println(msg);
+                                        }
                                     }
                             );
                         }
@@ -50,8 +59,8 @@ public class MediatorServer {
                             ChannelOption.SO_KEEPALIVE, true
             );
 
-            connectAsClient("localhost", 8081);
-            connectAsClient("localhost", 8082);
+            for(int i=8081; i<=8100; i++)
+                connectAsClient("localhost", i);
 
             sb.bind(8080).sync()        //binds server asynchronously and wait till binding completes.
             .channel().closeFuture().sync();    //block till closing completes
@@ -75,13 +84,15 @@ public class MediatorServer {
                                 @Override
                                 protected void initChannel(SocketChannel ch) throws Exception {
                                     ch.pipeline().addLast(
-                                            new LoggingHandler(LogLevel.INFO),
+//                                            new LoggingHandler(LogLevel.INFO),
                                             new SimpleChannelInboundHandler<ByteBuf>() {
                                                 @Override
                                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
                                                     ByteBuf bb = ctx.channel().alloc().buffer();
                                                     bb.writeCharSequence("Hello from MediatorServer", StandardCharsets.UTF_8);
                                                     ctx.writeAndFlush(bb);
+
+                                                    System.out.println("["+Thread.currentThread().getName()+"]");
                                                 }
 
                                                 @Override
@@ -98,6 +109,7 @@ public class MediatorServer {
                                 }
                             }
                     );
+
             b.connect(host, port).sync()
                     .channel().closeFuture().sync();
         }catch(Exception e){
