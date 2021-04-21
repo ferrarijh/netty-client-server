@@ -48,9 +48,9 @@ public class Client {
                                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
                                                     System.out.println("1st inbound handler");
                                                     String msg = "[TEST MESSAGE]";
-//                                                    ctx.writeAndFlush(msg);
+                                                    ctx.writeAndFlush(msg);   //TODO("writeAndFlush() is only effective at the end of pipeline")
 //                                                    ctx.fireChannelActive();
-                                                    ctx.fireChannelRead(msg);
+//                                                    ctx.fireChannelRead(msg);
 
                                                 }
                                             },
@@ -76,7 +76,23 @@ public class Client {
 
                                                     ctx.writeAndFlush(msg);
                                                 }
+                                            },
+
+                                            new ChannelInboundHandlerAdapter(){
+                                                @Override
+                                                public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                                    System.out.println("3rd inbound handler");
+                                                }
+
+                                                @Override
+                                                public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                                    String msgStr = (String) msg;
+                                                    System.out.println("3rd inbound handler received: "+msgStr);
+
+//                                                    ctx.writeAndFlush(msg);
+                                                }
                                             }
+
                                     );
                                 }
                             }

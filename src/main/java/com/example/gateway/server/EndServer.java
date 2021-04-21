@@ -14,6 +14,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 public class EndServer {
+    private String id;
     private final int port = 8081;
 
     public static void main(String[] args) {
@@ -22,6 +23,8 @@ public class EndServer {
     }
 
     public void run(int p){
+        this.id = "serverA";
+
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
 
@@ -51,11 +54,11 @@ public class EndServer {
                         }
                     });
 
-            sb.bind(p);
-//                    .sync()
-//                    .channel().closeFuture().sync();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
+            sb.bind(p)
+                    .sync()
+                    .channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally{
 //            workerGroup.shutdownGracefully();
 //            bossGroup.shutdownGracefully();

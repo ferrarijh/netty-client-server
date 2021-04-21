@@ -28,8 +28,6 @@ public class MediatorServer {
         workerGroup = new NioEventLoopGroup();
         bossGroup = new NioEventLoopGroup();
 
-//        testLoop = workerGroup.next();
-
         try {
             ServerBootstrap sb = new ServerBootstrap();
             sb.group(bossGroup, workerGroup)
@@ -39,28 +37,15 @@ public class MediatorServer {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
                                     new LoggingHandler(LogLevel.INFO),
-                                    new SimpleChannelInboundHandler<ByteBuf>() {
-                                        @Override
-                                        protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-                                            ByteBuf bb = ctx.channel().alloc().buffer();
-                                            bb.writeBytes(msg);
-                                            ctx.writeAndFlush(bb);
-                                        }
-
-                                        @Override
-                                        public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                            String msg = "["+Thread.currentThread().getName()+"]";
-                                            System.out.println(msg);
-                                        }
-                                    }
+                                    new SimpleMediatorDownstreamHandler()
                             );
                         }
                     }).childOption(
                             ChannelOption.SO_KEEPALIVE, true
             );
 
-            for(int i=8081; i<=8100; i++)
-                connectAsClient("localhost", i);
+            for(int i=8081; i<=8082; i++)
+                connectAsClient("AAA"+(i-8080), "localhost", i);
 
             sb.bind(8080).sync()        //binds server asynchronously and wait till binding completes.
             .channel().closeFuture().sync();    //block till closing completes
@@ -74,7 +59,10 @@ public class MediatorServer {
 
     }
 
-    public void connectAsClient(String host, int port){
+    public void connectAsClient(String id, String host, int port){
+        if(id.length() != 4)
+            throw new IllegalArgumentException("length of id must be 4");
+
         try{
             Bootstrap b = new Bootstrap();
             b.group(workerGroup)
@@ -88,6 +76,8 @@ public class MediatorServer {
                                             new SimpleChannelInboundHandler<ByteBuf>() {
                                                 @Override
                                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                                    ChannelRepository.putUpChannel(id, ctx.channel());
+
                                                     ByteBuf bb = ctx.channel().alloc().buffer();
                                                     bb.writeCharSequence("Hello from MediatorServer", StandardCharsets.UTF_8);
                                                     ctx.writeAndFlush(bb);

@@ -59,5 +59,7 @@ Specify main class in `pom.xml`.
 ### `NoClassDefFoundError`
 Create fat-jar or uber-jar. (Issued when dependent classes are missing)
 
-# Glossaries
-### binding
+## Things to note...
+* For a channel to actually send out data to its socket,
+1) call `ctx.writeAndFlush(obj)` at the last `ChannelInboundHandler` with `ChannelOutboundHandler` attached. Or
+2) call `ctx.channel().writeAndFlush(obj)` at any `ChannelInboundHandler` with `ChannelOutoundHandler` attached.

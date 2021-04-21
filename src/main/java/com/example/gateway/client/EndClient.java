@@ -15,11 +15,14 @@ import io.netty.handler.logging.LoggingHandler;
 import java.nio.charset.StandardCharsets;
 
 public class EndClient {
+    private String id;
     public static void main(String[] args) {
         new EndClient().run();
     }
 
     public void run(){
+        this.id = "clientA";
+
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try{
