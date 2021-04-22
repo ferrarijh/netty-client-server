@@ -48,9 +48,14 @@ public class Client {
                                                 public void channelActive(ChannelHandlerContext ctx) throws Exception {
                                                     System.out.println("1st inbound handler");
                                                     String msg = "[TEST MESSAGE]";
-                                                    ctx.writeAndFlush(msg);   //TODO("writeAndFlush() is only effective at the end of pipeline")
+                                                    ctx.writeAndFlush(msg);
+
 //                                                    ctx.fireChannelActive();
 //                                                    ctx.fireChannelRead(msg);
+
+//                                                    ByteBuf bb = ctx.alloc().buffer();
+//                                                    bb.writeCharSequence(msg, StandardCharsets.UTF_8);
+//                                                    ctx.writeAndFlush(bb);
 
                                                 }
                                             },

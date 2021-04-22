@@ -13,6 +13,8 @@ import io.netty.handler.logging.LoggingHandler;
 
 import java.nio.charset.StandardCharsets;
 
+import static com.example.gateway.GatewayMessage.ID_LEN;
+
 public class MediatorServer {
     private EventLoopGroup workerGroup;
 //    private EventLoopGroup workerGroup2;
@@ -37,15 +39,15 @@ public class MediatorServer {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
                                     new LoggingHandler(LogLevel.INFO),
-                                    new SimpleMediatorDownstreamHandler()
+                                    new MediatorDownstreamHandler()
                             );
                         }
                     }).childOption(
                             ChannelOption.SO_KEEPALIVE, true
             );
 
-            for(int i=8081; i<=8082; i++)
-                connectAsClient("AAA"+(i-8080), "localhost", i);
+            for(int i=8081; i<=8081; i++)
+                connectAsClient("E"+(i-8080), "localhost", i);
 
             sb.bind(8080).sync()        //binds server asynchronously and wait till binding completes.
             .channel().closeFuture().sync();    //block till closing completes
@@ -59,8 +61,8 @@ public class MediatorServer {
 
     }
 
-    public void connectAsClient(String id, String host, int port){
-        if(id.length() != 4)
+    public void connectAsClient(String destId, String host, int port){
+        if(destId.length() != ID_LEN)
             throw new IllegalArgumentException("length of id must be 4");
 
         try{
@@ -72,36 +74,16 @@ public class MediatorServer {
                                 @Override
                                 protected void initChannel(SocketChannel ch) throws Exception {
                                     ch.pipeline().addLast(
-//                                            new LoggingHandler(LogLevel.INFO),
-                                            new SimpleChannelInboundHandler<ByteBuf>() {
-                                                @Override
-                                                public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                                    ChannelRepository.putUpChannel(id, ctx.channel());
-
-                                                    ByteBuf bb = ctx.channel().alloc().buffer();
-                                                    bb.writeCharSequence("Hello from MediatorServer", StandardCharsets.UTF_8);
-                                                    ctx.writeAndFlush(bb);
-
-                                                    System.out.println("["+Thread.currentThread().getName()+"]");
-                                                }
-
-                                                @Override
-                                                protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-                                                    System.out.println("(channelRead0) msg: "+msg.toString(StandardCharsets.UTF_8));
-                                                }
-
-                                                @Override
-                                                public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-                                                    System.out.println("(channelReadComplete)");
-                                                }
-                                            }
+                                            new LoggingHandler(LogLevel.INFO),
+                                            new MediatorUpstreamHandler(destId)
                                     );
                                 }
                             }
                     );
 
             b.connect(host, port).sync()
-                    .channel().closeFuture().sync();
+//                    .channel().closeFuture().sync()
+                    ;
         }catch(Exception e){
             e.printStackTrace();
         }

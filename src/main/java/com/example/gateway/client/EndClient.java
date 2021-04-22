@@ -2,10 +2,7 @@ package com.example.gateway.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -13,15 +10,20 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
+import static com.example.gateway.GatewayMessage.ID_LEN;
+import static com.example.gateway.GatewayMessage.MESSAGE_LEN;
 
 public class EndClient {
     private String id;
+    private Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
         new EndClient().run();
     }
 
     public void run(){
-        this.id = "clientA";
+        getIdInput();
 
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -34,22 +36,11 @@ public class EndClient {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
                                     new LoggingHandler(LogLevel.INFO),
-                                    new SimpleChannelInboundHandler<ByteBuf>() {
-                                        @Override
-                                        protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-                                            System.out.println("(channelRead0) "+msg.toString(StandardCharsets.UTF_8));
-                                        }
-
-                                        @Override
-                                        public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                            ByteBuf bb = ctx.alloc().buffer();
-                                            bb.writeCharSequence("Hello from EndClient", StandardCharsets.UTF_8);
-                                            ctx.writeAndFlush(bb);
-                                        }
-                                    }
+                                    new EndClientHandler()
                             );
                         }
                     });
+
 
             b.connect("localhost", 8080).sync()
                     .channel().closeFuture().sync();
@@ -59,4 +50,32 @@ public class EndClient {
             workerGroup.shutdownGracefully();
         }
     }
+
+    private void getIdInput(){
+        System.out.print("client id: ");
+        String newId = sc.nextLine();
+        if(newId.length() != ID_LEN)
+            throw new IllegalArgumentException("invalid id length (must be 4");
+        this.id = newId;
+    }
+//
+//    private void sendMessage(ChannelHandlerContext ctx){
+//
+//        System.out.print("destination id(length=4): ");
+//        String id = sc.nextLine();
+//        while(id.length() != 4){
+//            System.out.print("destination id(length=4): ");
+//            id = sc.nextLine();
+//        }
+//
+//        System.out.print("message: ");
+//        String msgTmp = sc.nextLine();
+//        if(msgTmp.equals("exit"))
+//            return;
+//        String msg = String.format("%1$"+MESSAGE_LEN+"s", msgTmp);
+//
+//        ctx.writeAndFlush(id+msg);
+//
+//        sendMessage(ctx);
+//    }
 }

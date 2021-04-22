@@ -13,17 +13,19 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
+import java.util.Scanner;
+
 public class EndServer {
-    private String id;
-    private final int port = 8081;
+//    private String id;
+//    private final int port = 8081;
 
     public static void main(String[] args) {
-        for(int i=8081; i<=8100; i++)
+        for(int i=8081; i<=8081; i++)
             new EndServer().run(i);
     }
 
     public void run(int p){
-        this.id = "serverA";
+//        getIdInput();
 
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -37,19 +39,7 @@ public class EndServer {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(
                                     new LoggingHandler(LogLevel.INFO),
-                                    new SimpleChannelInboundHandler<ByteBuf>() {
-                                        @Override
-                                        protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-                                            ByteBuf bb = Unpooled.buffer();
-                                            bb.writeBytes(msg);
-                                            ctx.writeAndFlush(bb);
-                                        }
-
-                                        @Override
-                                        public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-                                            ctx.close();
-                                        }
-                                    }
+                                    new EndServerHandler()
                             );
                         }
                     });
@@ -62,6 +52,16 @@ public class EndServer {
         } finally{
 //            workerGroup.shutdownGracefully();
 //            bossGroup.shutdownGracefully();
+        }
+    }
+
+    private void getIdInput(){
+        Scanner sc = new Scanner(System.in);
+        String newId = "";
+        System.out.print("client id (length=4): ");
+        while(newId.length() != 4) {
+            System.out.print("client id (length=4): ");
+            newId = sc.nextLine();
         }
     }
 }
